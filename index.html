@@ -39,8 +39,8 @@
                         { name: "Comparative Scoring", tech: "Custom financial scorer", detail: "Coverage balance: min(A,B)/max(A,B)\nComparative language + Aspect coverage" }
                     ]
                 },
-                factual: {
-                    title: "FACTUAL Pipeline",
+                definition: {
+                    title: "DEFINITION Pipeline",
                     example: '"What is a Roth IRA?"',
                     color: "#3b82f6",
                     steps: [
@@ -49,14 +49,24 @@
                         { name: "Entity Prominence", tech: "Position scoring", detail: "Earlier position = higher score" }
                     ]
                 },
-                explanation: {
-                    title: "EXPLANATION Pipeline",
+                explanation_why: {
+                    title: "EXPLANATION_WHY Pipeline",
                     example: '"Why do stock prices drop after earnings?"',
                     color: "#ec4899",
                     steps: [
-                        { name: "HyDE Enhancement", tech: "LLM generation", detail: "Generate hypothetical answer for query expansion" },
-                        { name: "Causal Patterns", tech: "Discourse markers", detail: "'because', 'due to', 'caused by', 'leads to'" },
-                        { name: "Reasoning Chains", tech: "Chain detection", detail: "Multi-step reasoning: A → B → C" }
+                        { name: "HyDE Expansion", tech: "LLM generation", detail: "Prompt: 'Explain why {topic} happens in finance...'\nUse embedding of generated answer for retrieval boost" },
+                        { name: "Causal Marker Boost", tech: "Soft scoring", detail: "+score for: 'because', 'due to', 'caused by',\n'driven by', 'as a result', 'the reason is'" },
+                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.3×CausalMarkerDensity\n(soft boost, NOT hard filter)" }
+                    ]
+                },
+                explanation_how: {
+                    title: "EXPLANATION_HOW Pipeline",
+                    example: '"How do I calculate compound interest?"',
+                    color: "#8b5cf6",
+                    steps: [
+                        { name: "HyDE Expansion", tech: "LLM generation", detail: "Prompt: 'Write step-by-step instructions for {action}...'\nUse embedding for retrieval boost" },
+                        { name: "Procedural Structure Boost", tech: "Soft scoring", detail: "+score for: numbered lists, 'step 1/2/3',\n'first...then...finally', imperative verbs" },
+                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×ProceduralScore + 0.1×FormulaPresence" }
                     ]
                 }
             };
@@ -76,10 +86,10 @@
             const PipelineCard = ({ id, title, emoji, color, isSelected }) => (
                 <div 
                     onClick={() => setSelectedPipeline(isSelected ? null : id)}
-                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 ${isSelected ? 'shadow-lg scale-105' : 'hover:shadow-md'}`}
+                    className={`cursor-pointer p-3 rounded-lg border-2 transition-all duration-300 ${isSelected ? 'shadow-lg scale-105' : 'hover:shadow-md'}`}
                     style={{ borderColor: color, backgroundColor: isSelected ? `${color}20` : 'white' }}
                 >
-                    <div className="text-center font-bold" style={{ color }}>{emoji} {title}</div>
+                    <div className="text-center font-bold text-sm" style={{ color }}>{emoji} {title}</div>
                 </div>
             );
 
@@ -120,11 +130,17 @@
 
                             <Arrow />
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            {/* Row 1: 3 pipelines */}
+                            <div className="grid grid-cols-3 gap-3 mb-3">
                                 <PipelineCard id="advice" title="ADVICE" emoji="💡" color="#22c55e" isSelected={selectedPipeline === 'advice'} />
                                 <PipelineCard id="comparison" title="COMPARISON" emoji="⚖️" color="#f59e0b" isSelected={selectedPipeline === 'comparison'} />
-                                <PipelineCard id="factual" title="FACTUAL" emoji="📖" color="#3b82f6" isSelected={selectedPipeline === 'factual'} />
-                                <PipelineCard id="explanation" title="EXPLANATION" emoji="❓" color="#ec4899" isSelected={selectedPipeline === 'explanation'} />
+                                <PipelineCard id="definition" title="DEFINITION" emoji="📖" color="#3b82f6" isSelected={selectedPipeline === 'definition'} />
+                            </div>
+                            
+                            {/* Row 2: 2 explanation pipelines */}
+                            <div className="grid grid-cols-2 gap-3 mb-6 max-w-md mx-auto">
+                                <PipelineCard id="explanation_why" title="EXPL_WHY" emoji="❓" color="#ec4899" isSelected={selectedPipeline === 'explanation_why'} />
+                                <PipelineCard id="explanation_how" title="EXPL_HOW" emoji="🔧" color="#8b5cf6" isSelected={selectedPipeline === 'explanation_how'} />
                             </div>
 
                             {selectedPipeline && (
