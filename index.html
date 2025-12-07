@@ -36,7 +36,9 @@
                     steps: [
                         { name: "Entity Extraction", tech: "SpaCy + regex", detail: "Extract Entity_A, Entity_B from 'X vs Y' patterns" },
                         { name: "Dual-Entity Filter", tech: "Hard constraint", detail: "Document MUST mention BOTH entities" },
-                        { name: "Comparative Scoring", tech: "Custom financial scorer", detail: "Coverage balance: min(A,B)/max(A,B)\nComparative language + Aspect coverage" }
+                        { name: "Coverage Balance Score", tech: "Count-based", detail: "CoverageBalance = min(count_A, count_B) / max(count_A, count_B). Penalty if there is a lot about A in the doc and almost nothing about B" },
+                        { name: "Comparative Language Score", tech: "Keyword matching", detail: "+score for words: 'better than', 'whereas', 'in contrast', 'on one hand...on the other', 'compared to'" },
+                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×CoverageBalance + 0.1×ComparativeLanguage" }
                     ]
                 },
                 definition: {
@@ -45,8 +47,9 @@
                     color: "#3b82f6",
                     steps: [
                         { name: "Entity-Centric Query", tech: "NER extraction", detail: "Extract main entity from query" },
-                        { name: "Definition Patterns", tech: "Regex matching", detail: "'X is a...', 'X refers to...', 'X means...'" },
-                        { name: "Entity Prominence", tech: "Position scoring", detail: "Earlier position = higher score" }
+                        { name: "Definition Patterns", tech: "Regex matching", detail: "+score for patterns like 'X is a...', 'X refers to...', 'X means...'" },
+                        { name: "Entity Prominence", tech: "Position scoring", detail: "Earlier position = higher score" },
+                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×DefinitionPatterns + 0.1×EntityProminence" }
                     ]
                 },
                 explanation_why: {
@@ -125,7 +128,7 @@
 
                             <Box className="bg-orange-50 border-2 border-orange-500 max-w-md mx-auto text-center">
                                 <div className="text-sm font-semibold text-orange-700">🎯 INTENT CLASSIFIER</div>
-                                <div className="text-slate-600 text-xs mt-1">DistilBERT fine-tuned on FiQA</div>
+                                <div className="text-slate-600 text-xs mt-1">DistilBERT/FinBERT fine-tuned on FiQA</div>
                             </Box>
 
                             <Arrow />
