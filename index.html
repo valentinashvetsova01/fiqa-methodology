@@ -113,22 +113,15 @@
                             <Arrow />
 
                             <Box className="bg-amber-50 border-2 border-amber-400 max-w-lg mx-auto text-center">
-                                <div className="text-sm font-semibold text-amber-700">⚡ UNIVERSAL QUERY EXPANSION</div>
-                                <div className="text-slate-600 text-xs mt-1">Query2Doc: LLM generates pseudo-document</div>
+                                <div className="text-sm font-semibold text-amber-700">⚡ INTENT-AWARE QUERY EXPANSION (attempt for improvement)</div>
+                                <div className="text-slate-600 text-xs mt-1">HyDE-style: LLM generates pseudo-answer</div>
                             </Box>
 
                             <Arrow />
 
                             <Box className="bg-indigo-50 border-2 border-indigo-400 max-w-lg mx-auto text-center">
                                 <div className="text-sm font-semibold text-indigo-700">🔍 FIRST-STAGE RETRIEVAL (shared)</div>
-                                <div className="text-slate-600 text-xs mt-1">BM25 + Dense → RRF → Top-50 candidates</div>
-                            </Box>
-
-                            <Arrow />
-
-                            <Box className="bg-orange-50 border-2 border-orange-500 max-w-md mx-auto text-center">
-                                <div className="text-sm font-semibold text-orange-700">🎯 INTENT CLASSIFIER</div>
-                                <div className="text-slate-600 text-xs mt-1">DistilBERT/FinBERT fine-tuned on FiQA</div>
+                                <div className="text-slate-600 text-xs mt-1">Dense → Top-100 candidates</div>
                             </Box>
 
                             <Arrow />
