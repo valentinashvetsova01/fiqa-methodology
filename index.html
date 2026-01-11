@@ -29,18 +29,7 @@
                         { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = λ₁·CE + λ₂·ArgQuality + λ₃·DiscourseScore" }
                     ]
                 },
-                comparison: {
-                    title: "COMPARISON Pipeline",
-                    example: '"What is the difference between ETFs and mutual funds?"',
-                    color: "#f59e0b",
-                    steps: [
-                        { name: "Entity Extraction", tech: "SpaCy + regex", detail: "Extract Entity_A, Entity_B from 'X vs Y' patterns" },
-                        { name: "Dual-Entity Filter", tech: "Hard constraint", detail: "Document MUST mention BOTH entities" },
-                        { name: "Coverage Balance Score", tech: "Count-based", detail: "CoverageBalance = min(count_A, count_B) / max(count_A, count_B). Penalty if there is a lot about A in the doc and almost nothing about B" },
-                        { name: "Comparative Language Score", tech: "Keyword matching", detail: "+score for words: 'better than', 'whereas', 'in contrast', 'on one hand...on the other', 'compared to'" },
-                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×CoverageBalance + 0.1×ComparativeLanguage" }
-                    ]
-                },
+                
                 definition: {
                     title: "DEFINITION Pipeline",
                     example: '"What is a Roth IRA?"',
@@ -62,16 +51,6 @@
                         { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.3×CausalMarkerDensity\n(soft boost, NOT hard filter)" }
                     ]
                 },
-                explanation_how: {
-                    title: "EXPLANATION HOW Pipeline",
-                    example: '"How do I calculate compound interest?"',
-                    color: "#8b5cf6",
-                    steps: [
-                        { name: "HyDE Expansion", tech: "LLM generation", detail: "Prompt: 'Write step-by-step instructions for {action}...'\nUse embedding for retrieval boost" },
-                        { name: "Procedural Structure Boost", tech: "Soft scoring", detail: "+score for: numbered lists, 'step 1/2/3',\n'first...then...finally', imperative verbs" },
-                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×ProceduralScore + 0.1×FormulaPresence" }
-                    ]
-                }
             };
 
             const Box = ({ children, className }) => (
@@ -129,14 +108,8 @@
                             {/* Row 1: 3 pipelines */}
                             <div className="grid grid-cols-3 gap-3 mb-3">
                                 <PipelineCard id="advice" title="ADVICE" emoji="💡" color="#22c55e" isSelected={selectedPipeline === 'advice'} />
-                                <PipelineCard id="comparison" title="COMPARISON" emoji="⚖️" color="#f59e0b" isSelected={selectedPipeline === 'comparison'} />
-                                <PipelineCard id="definition" title="DEFINITION" emoji="📖" color="#3b82f6" isSelected={selectedPipeline === 'definition'} />
-                            </div>
-                            
-                            {/* Row 2: 2 explanation pipelines */}
-                            <div className="grid grid-cols-2 gap-3 mb-6 max-w-md mx-auto">
                                 <PipelineCard id="explanation_why" title="EXPLANATION WHY" emoji="❓" color="#ec4899" isSelected={selectedPipeline === 'explanation_why'} />
-                                <PipelineCard id="explanation_how" title="EXPLANATION HOW" emoji="🔧" color="#8b5cf6" isSelected={selectedPipeline === 'explanation_how'} />
+                                <PipelineCard id="definition" title="DEFINITION" emoji="📖" color="#3b82f6" isSelected={selectedPipeline === 'definition'} />
                             </div>
 
                             {selectedPipeline && (
