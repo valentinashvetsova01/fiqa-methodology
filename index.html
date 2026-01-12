@@ -35,10 +35,10 @@
                     example: '"What is a Roth IRA?"',
                     color: "#3b82f6",
                     steps: [
-                        { name: "Entity-Centric Query", tech: "NER extraction", detail: "Extract main entity from query" },
+                        { name: "Entity Extraction", tech: "Regex parsing", detail: "Extract target entity from query (e.g., "Roth IRA" from "What is a Roth IRA?")" },
                         { name: "Definition Patterns", tech: "Regex matching", detail: "+score for patterns like 'X is a...', 'X refers to...', 'X means...'" },
                         { name: "Entity Prominence", tech: "Position scoring", detail: "Earlier position = higher score" },
-                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.2×DefinitionPatterns + 0.1×EntityProminence" }
+                        { name: "Cross-Encoder + Gated Fusion", tech: "ms-marco-MiniLM-L-12-v2", detail: "Final = CE_norm + (gate_CE × gate_entity) × (w_pat × pattern + w_prom × prominence)" }
                     ]
                 },
                 explanation_why: {
@@ -46,9 +46,11 @@
                     example: '"Why do stock prices drop after earnings?"',
                     color: "#ec4899",
                     steps: [
-                        { name: "HyDE Expansion", tech: "LLM generation", detail: "Prompt: 'Explain why {topic} happens in finance...'\nUse embedding of generated answer for retrieval boost" },
-                        { name: "Causal Marker Boost", tech: "Soft scoring", detail: "+score for: 'because', 'due to', 'caused by',\n'driven by', 'as a result', 'the reason is'" },
-                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = 0.7×CE + 0.3×CausalMarkerDensity\n(soft boost, NOT hard filter)" }
+                        { name: "Query-Document Overlap", tech: "Token matching", detail: "+score for query terms appearing in document (stopwords removed)" },
+                        { name: "Causal Marker Boost", tech: "Lexicon matching", detail: "+score for: 'because', 'due to', 'caused by',\n'driven by', 'as a result', 'the reason is'" },
+                        { name: "Financial Causal Terms", tech: "Domain lexicon", detail: "+score for: 'inflation', 'interest rates', 'volatility', 'risk', 'liquidity'" },
+                        { name: "Explanation Style", tech: "Lexicon matching", detail: "+score for: 'for example', 'in other words'" },
+                        { name: "Cross-Encoder + Gated Fusion", tech: "ms-marco-MiniLM-L-12-v2", detail: "Final = CE_norm + gate × (α×overlap + β×causal + γ×finance + δ×style)" }
                     ]
                 },
             };
