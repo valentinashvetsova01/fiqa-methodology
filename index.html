@@ -24,9 +24,9 @@
                     example: '"Should I invest in index funds for retirement?"',
                     color: "#22c55e",
                     steps: [
-                        { name: "Argument Quality Scoring", tech: "Custom scorer", detail: "Discourse markers: 'because', 'therefore', 'for example'\nClaim-Premise-Evidence detection" },
-                        { name: "Evidence Detection", tech: "Regex + NLP patterns", detail: "Numerical data, citations, personal experience markers" },
-                        { name: "Cross-Encoder Re-rank", tech: "BGE-reranker-base", detail: "Final = λ₁·CE + λ₂·ArgQuality + λ₃·DiscourseScore" }
+                        { name: "Query-Document Overlap", tech: "Token matching", detail: "+score for query terms appearing in document (stopwords removed)" },
+                        { name: "Advice Style", tech: "Lexicon + structure", detail: "+score for advice phrases ('you should', 'I recommend', 'consider', 'it depends', 'pros', 'cons') + step structure (bullets, numbered lists, 'first/finally')" },
+                        { name: " Cross-Encoder + Gated Fusion", tech: "ms-marco-MiniLM-L-12-v2", detail: "Final = CE_norm + gate × (0.45×overlap + 0.05×advice_style)" }
                     ]
                 },
                 
@@ -35,7 +35,7 @@
                     example: '"What is a Roth IRA?"',
                     color: "#3b82f6",
                     steps: [
-                        { name: "Entity Extraction", tech: "Regex parsing", detail: "Extract target entity from query (e.g., "Roth IRA" from "What is a Roth IRA?")" },
+                        { name: "Entity Extraction", tech: "Regex parsing", detail: "Extract target entity from query (e.g., 'Roth IRA' from 'What is a Roth IRA?')" },
                         { name: "Definition Patterns", tech: "Regex matching", detail: "+score for patterns like 'X is a...', 'X refers to...', 'X means...'" },
                         { name: "Entity Prominence", tech: "Position scoring", detail: "Earlier position = higher score" },
                         { name: "Cross-Encoder + Gated Fusion", tech: "ms-marco-MiniLM-L-12-v2", detail: "Final = CE_norm + (gate_CE × gate_entity) × (w_pat × pattern + w_prom × prominence)" }
